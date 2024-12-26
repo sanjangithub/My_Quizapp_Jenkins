@@ -51,14 +51,16 @@ pipeline {
                 echo 'uploaded the artifact in nexus artifact repo.'
             }
         }
-        stage("Email Notification") {
+        stage('Email Notification') {
             steps {
                 emailext body: '''Hi Sanjan,
 
-The build for quizapp is successfull. You can check the results in the dashboard.
+The build for quizapp has completed successfully. Please check the dashboard for detailed results.
 
 Best Regards,
-Jenkins.''', subject: 'Quizapp_Jenkins_Build', to: 'sanjan.chikkala@gmail.com'
+Jenkins.''', 
+                subject: 'Quizapp Jenkins Build - SUCCESS', 
+                to: 'sanjan.chikkala@gmail.com'
             }
         }
     }
