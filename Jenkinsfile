@@ -44,7 +44,7 @@ pipeline {
         artifacts: [
             [artifactId: 'quizapp',
              classifier: '',
-             file: 'target/quizapp-1.1.jar', 
+             file: 'target/quizapp-1.4.jar', 
              type: 'jar']
         ]
      )
