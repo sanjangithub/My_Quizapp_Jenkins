@@ -10,12 +10,12 @@ pipeline {
             }
         }
         stage('Code_Build') {
-            steps {
-                when {
+            when {
                     expression {
                         BRANCH_NAME == 'dev'
                     }
                 }
+            steps {
                 echo 'Build started...'
                 bat 'mvn clean compile'
                 echo 'Build successfull.'
