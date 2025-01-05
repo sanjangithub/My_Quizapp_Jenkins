@@ -10,16 +10,16 @@ pipeline {
             }
         }
 
-        stage('Generate_Version') {
-            steps {
-                script {
-                    // Generate a unique version using the current timestamp
-                    def timestamp = new Date().format("yyyyMMddHHmmss")
-                    env.BUILD_VERSION = "1.0.${timestamp}"
-                    echo "Generated Build Version: ${env.BUILD_VERSION}"
-                }
-            }
-        }
+        // stage('Generate_Version') {
+        //     steps {
+        //         script {
+        //             // Generate a unique version using the current timestamp
+        //             def timestamp = new Date().format("yyyyMMddHHmmss")
+        //             env.BUILD_VERSION = "1.0.${timestamp}"
+        //             echo "Generated Build Version: ${env.BUILD_VERSION}"
+        //         }
+        //     }
+        // }
         
         stage('Code_Build') {
             steps {
@@ -42,30 +42,73 @@ pipeline {
                 echo 'Artifact is generated.'
             }
         }
+     //    stage('Artifact_NexusUploadation') {
+     //        steps {
+     //            echo 'Started uploading the artifact...'
+     //            nexusArtifactUploader(
+     //    nexusVersion: 'nexus3',
+     //    protocol: 'http',
+     //    nexusUrl: 'localhost:8081',
+     //    groupId: 'com.sanjan',
+     //    version: "${env.BUILD_VERSION}",
+     //    // version: '1.8',
+     //    repository: 'Quizapp_Hitman',
+     //    credentialsId: 'Sj_Nexus',
+     //    artifacts: [
+     //        [artifactId: 'quizapp',
+     //         classifier: '',
+     //         // file: "target/quizapp-${env.BUILD_VERSION}.jar",
+     //         file: 'target/quizapp-1.4.jar', 
+     //         type: 'jar']
+     //    ]
+     // )
+     //            // echo 'uploaded the artifact in nexus artifact repo.'
+     //            echo "Uploaded the artifact version ${env.BUILD_VERSION} to Nexus artifact repo."
+     //        }
+     //    }
+
         stage('Artifact_NexusUploadation') {
-            steps {
-                echo 'Started uploading the artifact...'
-                nexusArtifactUploader(
-        nexusVersion: 'nexus3',
-        protocol: 'http',
-        nexusUrl: 'localhost:8081',
-        groupId: 'com.sanjan',
-        version: "${env.BUILD_VERSION}",
-        // version: '1.8',
-        repository: 'Quizapp_Hitman',
-        credentialsId: 'Sj_Nexus',
-        artifacts: [
-            [artifactId: 'quizapp',
-             classifier: '',
-             file: "target/quizapp-${env.BUILD_VERSION}.jar",
-             // file: 'target/quizapp-1.4.jar', 
-             type: 'jar']
-        ]
-     )
-                // echo 'uploaded the artifact in nexus artifact repo.'
-                echo "Uploaded the artifact version ${env.BUILD_VERSION} to Nexus artifact repo."
+    steps {
+        script {
+            // Read the current Nexus version from a file or initialize it to 1.0
+            def versionFile = 'nexus_version.txt'
+            def currentVersion = '1.0' // Default if the file doesn't exist
+            if (fileExists(versionFile)) {
+                currentVersion = readFile(versionFile).trim()
             }
+            
+            // Increment the minor version (e.g., 1.8 -> 1.9)
+            def versionParts = currentVersion.split('\\.')
+            def major = versionParts[0].toInteger()
+            def minor = versionParts[1].toInteger() + 1
+            env.BUILD_VERSION = "${major}.${minor}"
+            
+            // Save the new version to the file
+            writeFile(file: versionFile, text: env.BUILD_VERSION)
+            echo "Updated Nexus version to: ${env.BUILD_VERSION}"
+            
+            // Upload the artifact to Nexus
+            echo 'Started uploading the artifact...'
+            nexusArtifactUploader(
+                nexusVersion: 'nexus3',
+                protocol: 'http',
+                nexusUrl: 'localhost:8081',
+                groupId: 'com.sanjan',
+                version: "${env.BUILD_VERSION}", // Incremented version
+                repository: 'Quizapp_Hitman',
+                credentialsId: 'Sj_Nexus',
+                artifacts: [
+                    [artifactId: 'quizapp',
+                     classifier: '',
+                     file: 'target/quizapp-1.4.jar', // Static artifact version
+                     type: 'jar']
+                ]
+            )
+            echo "Uploaded the artifact version ${env.BUILD_VERSION} to Nexus artifact repo."
         }
+    }
+}
+
         stage('Email Notification') {
             steps {
                 emailext body: '''Hi Sanjan,
