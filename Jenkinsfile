@@ -9,6 +9,18 @@ pipeline {
                 echo 'Cloning done.'
             }
         }
+
+        stage('Generate_Version') {
+            steps {
+                script {
+                    // Generate a unique version using the current timestamp
+                    def timestamp = new Date().format("yyyyMMddHHmmss")
+                    env.BUILD_VERSION = "1.0.${timestamp}"
+                    echo "Generated Build Version: ${env.BUILD_VERSION}"
+                }
+            }
+        }
+        
         stage('Code_Build') {
             steps {
                 echo 'Build started...'
@@ -38,17 +50,20 @@ pipeline {
         protocol: 'http',
         nexusUrl: 'localhost:8081',
         groupId: 'com.sanjan',
-        version: '1.8',
+        version: "${env.BUILD_VERSION}",
+        // version: '1.8',
         repository: 'Quizapp_Hitman',
         credentialsId: 'Sj_Nexus',
         artifacts: [
             [artifactId: 'quizapp',
              classifier: '',
-             file: 'target/quizapp-1.4.jar', 
+             file: "target/quizapp-${env.BUILD_VERSION}.jar",
+             // file: 'target/quizapp-1.4.jar', 
              type: 'jar']
         ]
      )
-                echo 'uploaded the artifact in nexus artifact repo.'
+                // echo 'uploaded the artifact in nexus artifact repo.'
+                echo "Uploaded the artifact version ${env.BUILD_VERSION} to Nexus artifact repo."
             }
         }
         stage('Email Notification') {
