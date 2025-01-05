@@ -38,7 +38,7 @@ pipeline {
         protocol: 'http',
         nexusUrl: 'localhost:8081',
         groupId: 'com.sanjan',
-        version: '1.7',
+        version: '1.8',
         repository: 'Quizapp_Hitman',
         credentialsId: 'Sj_Nexus',
         artifacts: [
@@ -56,6 +56,7 @@ pipeline {
                 emailext body: '''Hi Sanjan,
 
 The build for quizapp has completed successfully. Please check the dashboard for detailed results.
+Dashboard link - http://localhost:8080/job/Quizapp_Nex/
 
 Best Regards,
 Jenkins.''', 
