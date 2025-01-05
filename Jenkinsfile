@@ -38,7 +38,7 @@ pipeline {
         protocol: 'http',
         nexusUrl: 'localhost:8081',
         groupId: 'com.sanjan',
-        version: '1.5',
+        version: '1.6',
         repository: 'Quizapp_Hitman',
         credentialsId: 'Sj_Nexus',
         artifacts: [
