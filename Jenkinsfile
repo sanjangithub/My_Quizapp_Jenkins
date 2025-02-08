@@ -20,7 +20,7 @@ pipeline {
         stage('Sonar_Scanning') {
             steps {
                 echo 'Started sonar scanning on the project.'
-                bat 'mvn clean verify sonar:sonar -Dsonar.projectKey=Quiz_sonar_Nexus -Dsonar.host.url=http://localhost:9000 -Dsonar.login=sqp_b5df1de9578c348689f838e3490914225b60c162'
+                bat 'mvn clean verify sonar:sonar -Dsonar.projectKey=Quiz_sonar_Nexus -Dsonar.host.url=http://localhost:9000 -Dsonar.login=sqp_5f8535625ba9b0c0f5cc31df0e757ce7bde1388d'
                 echo 'Sonar report generation is completed.'
             }
         }
